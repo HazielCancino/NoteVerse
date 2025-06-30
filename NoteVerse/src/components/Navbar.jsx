@@ -1,27 +1,79 @@
-export default function Navbar() {
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, BookOpen } from 'lucide-react';
+
+const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleGetStarted = () => {
+    navigate('/notes');
+  };
+
   return (
-    <nav className="fixed top-0 w-full z-50 glass-effect">
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-[#102542]/95 backdrop-blur-md' : 'glass-effect'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-desert-sand rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                <path fillRule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" />
-              </svg>
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="w-8 h-8 bg-[#f87060] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-medium text-white">NoteCraft</span>
-          </div>
+            <span className="text-xl font-medium text-white">Noteverse</span>
+          </Link>
+
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-white hover:text-desert-sand transition-colors">Features</a>
-            <a href="#about" className="text-white hover:text-desert-sand transition-colors">About</a>
-            <a href="#contact" className="text-white hover:text-desert-sand transition-colors">Contact</a>
-            <button className="bg-desert-sand hover:bg-desert-sand-dark text-white px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
-              Get Started
+            <a href="#features" className="text-white hover:text-[#f87060] transition-colors">Features</a>
+            <a href="#about" className="text-white hover:text-[#f87060] transition-colors">About</a>
+            <Link to="/settings" className="text-white hover:text-[#f87060] transition-colors">Settings</Link>
+            <button 
+              onClick={handleGetStarted}
+              className="bg-[#f87060] hover:bg-[#e55a45] text-white px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
+            >
+              Launch App
             </button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-[#102542]/95 backdrop-blur-md border-t border-white/10">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <a href="#features" className="block px-3 py-2 text-white hover:text-[#f87060]">Features</a>
+              <a href="#about" className="block px-3 py-2 text-white hover:text-[#f87060]">About</a>
+              <Link to="/settings" className="block px-3 py-2 text-white hover:text-[#f87060]">Settings</Link>
+              <button 
+                onClick={handleGetStarted}
+                className="w-full text-left px-3 py-2 text-[#f87060] font-medium"
+              >
+                Launch App
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;
