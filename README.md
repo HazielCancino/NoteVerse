@@ -16,15 +16,15 @@ NoteVerse is a cross-platform note-taking app built with React, Electron, Vite, 
 
 #### 📌 Main Interface
 
-![Main Interface](NoteVerse/NoteVerse/src/assets/screenshots/screenshot-main.png)
+![Main Interface](NoteVerse/src/assets/screenshots/screenshot-main.png)
 
 #### 🎨 Loading screen
 
-![Theme Tools](NoteVerse/NoteVerse/src/assets/screenshots/screenshot-loading.png)
+![Theme Tools](NoteVerse/src/assets/screenshots/screenshot-loading.png)
 
 #### 📱 App Logo
 
-![Responsive](NoteVerse/NoteVerse/src/assets/logos/noteverse-high-resolution-logo.png)
+![Responsive](NoteVerse/src/assets/logos/noteverse-high-resolution-logo.png)
 
 ### 🧰 Tech Stack
 
@@ -38,7 +38,7 @@ NoteVerse is a cross-platform note-taking app built with React, Electron, Vite, 
 
 ### 📜 Privacy Policy
 
-Hosted at: [Privacy Policy](NoteVerse/NoteVerse/src/assets/privacy/PRIVACY.MD) and (https://www.privacypolicies.com/live/273ecd2e-d652-475e-8a2f-306ed8a24dde)
+Hosted at: [Privacy Policy](NoteVerse/src/assets/privacy/PRIVACY.MD) and (https://www.privacypolicies.com/live/273ecd2e-d652-475e-8a2f-306ed8a24dde)
 
 ---
 
