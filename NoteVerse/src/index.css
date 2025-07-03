@@ -12,22 +12,102 @@
   src: url("/fonts/proxima-nova/500-medium.woff") format("woff");
 }
 
+/* Theme variables will be injected here by ThemeService */
+:root {
+  /* Default fallback values - these will be overridden by ThemeService */
+  --color-primary: #102542;
+  --color-secondary: #1a3a5c;
+  --color-accent: #f87060;
+  --color-background: #f8fafc;
+  --color-text-primary: #102542;
+  --radius-md: 0.5rem;
+  --spacing-md: 1rem;
+  --animation-normal: 300ms;
+  --animation-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Update your existing classes to use CSS variables */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--color-glass, rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(var(--effect-blur, 10px));
+  border: 1px solid var(--color-glass-border, rgba(255, 255, 255, 0.2));
 }
 
 .note-card {
-  background: rgba(248, 112, 96, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(248, 112, 96, 0.2);
+  background: var(--color-surface, rgba(248, 112, 96, 0.1));
+  backdrop-filter: blur(var(--effect-blur, 10px));
+  border: 1px solid var(--color-border, rgba(248, 112, 96, 0.2));
+  transition: all var(--animation-normal) var(--animation-smooth);
 }
 
 .hover-lift {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--animation-normal) var(--animation-smooth);
 }
 .hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(16, 37, 66, 0.3);
+  transform: translateY(var(--effect-hover-lift, -5px));
+  box-shadow: var(--shadow-lg, 0 20px 40px rgba(16, 37, 66, 0.3));
+}
+
+/* Global app styling with theme variables */
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary, "Proxima Nova", sans-serif);
+  transition: background-color var(--animation-normal) var(--animation-smooth),
+    color var(--animation-normal) var(--animation-smooth);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  transition: all var(--animation-normal) var(--animation-smooth);
+}
+
+/* Utility classes that use theme variables */
+.themed-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  transition: all var(--animation-normal) var(--animation-smooth);
+}
+
+.themed-button {
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-primary);
+  cursor: pointer;
+  transition: all var(--animation-fast) var(--animation-smooth);
+}
+
+.themed-button:hover {
+  background: var(--color-secondary);
+  transform: scale(var(--effect-hover-scale, 1.05));
+}
+
+.themed-button.accent {
+  background: var(--color-accent);
+}
+
+/* Text colors */
+.text-primary {
+  color: var(--color-text-primary);
+}
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+.text-muted {
+  color: var(--color-text-muted);
+}
+.text-accent {
+  color: var(--color-text-accent);
 }

@@ -1,5 +1,6 @@
+// src/components/FeaturesSection.jsx
 import React from 'react';
-import { Palette, Smartphone, Music, Image, Sync, Shield } from 'lucide-react';
+import { Palette, Smartphone, Music, Image, RefreshCw, Shield } from 'lucide-react';
 
 const FeaturesSection = () => {
   const features = [
@@ -9,7 +10,7 @@ const FeaturesSection = () => {
       description: "Linux-inspired customization. Change themes, layouts, fonts, and every visual detail without coding."
     },
     {
-      icon: <Sync className="w-8 h-8 text-white" />,
+      icon: <RefreshCw className="w-8 h-8 text-white" />,
       title: "Cross-Platform Sync",
       description: "Seamlessly sync between Android, PC, and web. Your notes follow you everywhere, even offline."
     },

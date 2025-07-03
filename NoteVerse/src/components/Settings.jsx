@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+// src/components/Settings.jsx
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ThemeService from '../services/themeService.js';
 import { 
   ArrowLeft, 
   Palette, 
@@ -22,7 +24,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('appearance');
   const [settings, setSettings] = useState({
     // Appearance
-    theme: 'system', // 'light', 'dark', 'system'
+    theme: 'app-default',
     accentColor: '#f87060',
     fontSize: 'medium',
     fontFamily: 'Proxima Nova',
@@ -48,14 +50,44 @@ const Settings = () => {
     soundEffects: false
   });
 
+  const [currentTheme, setCurrentTheme] = useState(null);
+  const [allThemes, setAllThemes] = useState({});
+
+  useEffect(() => {
+    // Load current theme and all available themes
+    const loadThemes = () => {
+      try {
+        const theme = ThemeService.getCurrentTheme();
+        const themes = ThemeService.getAllThemes();
+        setCurrentTheme(theme);
+        setAllThemes(themes);
+        setSettings(prev => ({ ...prev, theme: ThemeService.currentTheme || 'app-default' }));
+      } catch (error) {
+        console.error('Error loading themes:', error);
+      }
+    };
+
+    loadThemes();
+  }, []);
+
   const updateSetting = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+    
+    // Handle theme changes
+    if (key === 'theme') {
+      try {
+        ThemeService.setTheme(value);
+        setCurrentTheme(ThemeService.getCurrentTheme());
+      } catch (error) {
+        console.error('Error setting theme:', error);
+      }
+    }
   };
 
   const themes = [
-    { id: 'light', name: 'Light', preview: 'bg-white border-gray-300' },
-    { id: 'dark', name: 'Dark', preview: 'bg-gray-900 border-gray-700' },
-    { id: 'system', name: 'System', preview: 'bg-gradient-to-r from-white to-gray-900' }
+    { id: 'app-default', name: 'App Default', preview: 'bg-gradient-to-r from-[#102542] to-[#1a3a5c]' },
+    { id: 'dark-professional', name: 'Dark Professional', preview: 'bg-gradient-to-r from-[#0f172a] to-[#1e293b]' },
+    { id: 'cyberpunk', name: 'Cyberpunk', preview: 'bg-gradient-to-r from-[#0a0a0a] to-[#1a1a2e]' }
   ];
 
   const accentColors = [
@@ -70,6 +102,63 @@ const Settings = () => {
     { id: 'privacy', name: 'Privacy & Security', icon: <Shield className="w-4 h-4" /> },
     { id: 'advanced', name: 'Advanced', icon: <SettingsIcon className="w-4 h-4" /> }
   ];
+
+  const handleSaveSettings = () => {
+    // Save settings to localStorage
+    localStorage.setItem('noteverse_settings', JSON.stringify(settings));
+    
+    // Show success message
+    alert('Settings saved successfully!');
+  };
+
+  const handleExportNotes = () => {
+    try {
+      const notes = JSON.parse(localStorage.getItem('noteverse_notes') || '[]');
+      const dataStr = JSON.stringify(notes, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'noteverse-notes.json';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting notes:', error);
+      alert('Error exporting notes');
+    }
+  };
+
+  const handleImportNotes = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const notes = JSON.parse(e.target.result);
+            localStorage.setItem('noteverse_notes', JSON.stringify(notes));
+            alert('Notes imported successfully!');
+          } catch (error) {
+            console.error('Error importing notes:', error);
+            alert('Error importing notes');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleClearAllData = () => {
+    if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+      localStorage.clear();
+      alert('All data cleared. The app will reload.');
+      window.location.reload();
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -226,11 +315,17 @@ const Settings = () => {
 
             {/* Backup Actions */}
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center gap-2 px-4 py-3 bg-[#f87060] text-white rounded-lg hover:bg-[#e55a45] transition-colors">
+              <button 
+                onClick={handleExportNotes}
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-[#f87060] text-white rounded-lg hover:bg-[#e55a45] transition-colors"
+              >
                 <Download className="w-4 h-4" />
                 Export Notes
               </button>
-              <button className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              <button 
+                onClick={handleImportNotes}
+                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <Upload className="w-4 h-4" />
                 Import Notes
               </button>
@@ -384,7 +479,10 @@ const Settings = () => {
             <div className="border border-red-200 bg-red-50 p-6 rounded-lg">
               <h3 className="text-lg font-medium text-red-800 mb-4">🚨 Danger Zone</h3>
               <div className="space-y-3">
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                <button 
+                  onClick={handleClearAllData}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
                   <Trash2 className="w-4 h-4" />
                   Clear All Data
                 </button>
@@ -417,7 +515,10 @@ const Settings = () => {
               <h1 className="text-2xl font-bold text-[#102542]">Settings</h1>
             </div>
             
-            <button className="flex items-center gap-2 px-4 py-2 bg-[#f87060] text-white rounded-lg hover:bg-[#e55a45] transition-colors">
+            <button 
+              onClick={handleSaveSettings}
+              className="flex items-center gap-2 px-4 py-2 bg-[#f87060] text-white rounded-lg hover:bg-[#e55a45] transition-colors"
+            >
               <Save className="w-4 h-4" />
               Save Changes
             </button>

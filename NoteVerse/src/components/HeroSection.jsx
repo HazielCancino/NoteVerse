@@ -1,3 +1,4 @@
+// src/components/HeroSection.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, ArrowRight } from 'lucide-react';
